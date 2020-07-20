@@ -100,4 +100,7 @@ interface ConfigMessages {
 
     @Message(id = 28, value = "Could not find a mapping for %s with prefix %s")
     NoSuchElementException mappingPrefixNotFound(String className, String prefix);
+
+    @Message(id = 29, value = "Type %s not supported for unwrapping.")
+    IllegalArgumentException getTypeNotSupportedForUnwrapping(Class<?> type);
 }
