@@ -6,6 +6,7 @@ import static io.smallrye.config.ConfigMappingInterface.MapProperty;
 import static io.smallrye.config.ConfigMappingInterface.MayBeOptionalProperty;
 import static io.smallrye.config.ConfigMappingInterface.PrimitiveProperty;
 import static io.smallrye.config.ConfigMappingInterface.Property;
+import static io.smallrye.config.ConfigMappingLoader.getConfigMappingClass;
 import static io.smallrye.config.ConfigMappingLoader.getConfigMappingInterface;
 
 import java.io.Serializable;
@@ -669,7 +670,7 @@ final class ConfigMappingProvider implements Serializable {
         public Builder addRoot(String path, Class<?> type) {
             Assert.checkNotNullParam("path", path);
             Assert.checkNotNullParam("type", type);
-            roots.computeIfAbsent(path, k -> new ArrayList<>(4)).add(ConfigMappingClass.toInterface(type));
+            roots.computeIfAbsent(path, k -> new ArrayList<>(4)).add(getConfigMappingClass(type));
             return this;
         }
 

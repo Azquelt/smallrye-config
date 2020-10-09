@@ -22,13 +22,28 @@ public final class ConfigMappingLoader {
     public static List<ConfigMappingMetadata> getConfigMappingsMetadata(Class<?> type) {
         final List<ConfigMappingMetadata> mappings = new ArrayList<>();
         final ConfigMappingInterface configurationInterface = ConfigMappingInterface.getConfigurationInterface(type);
-        mappings.add(configurationInterface);
-        mappings.addAll(configurationInterface.getNested());
+        if (configurationInterface != null) {
+            mappings.add(configurationInterface);
+            mappings.addAll(configurationInterface.getNested());
+        }
+        final ConfigMappingClass configMappingClass = ConfigMappingClass.getConfigurationClass(type);
+        if (configMappingClass != null) {
+            mappings.add(configMappingClass);
+        }
         return mappings;
     }
 
     static ConfigMappingInterface getConfigMappingInterface(final Class<?> type) {
-        return ConfigMappingInterface.getConfigurationInterface(type);
+        return ConfigMappingInterface.getConfigurationInterface(getConfigMappingClass(type));
+    }
+
+    static Class<?> getConfigMappingClass(final Class<?> type) {
+        final ConfigMappingClass configMappingClass = ConfigMappingClass.getConfigurationClass(type);
+        if (configMappingClass == null) {
+            return type;
+        } else {
+            return loadClass(type.getClassLoader(), configMappingClass.getClassName(), configMappingClass.getClassBytes());
+        }
     }
 
     static <T> T configMappingObject(Class<T> interfaceType, ConfigMappingContext configMappingContext) {
