@@ -56,8 +56,7 @@ final class ConfigMappingClass implements ConfigMappingMetadata {
             return null;
         }
 
-        String interfaceName = ConfigMappingClass.class.getPackage().getName() + "." + classType.getSimpleName() +
-                classType.getName().hashCode() + "I";
+        String interfaceName = classType.getName() + classType.getName().hashCode() + "I";
 
         return new ConfigMappingClass(classType, interfaceName);
     }
