@@ -15,8 +15,6 @@
  */
 package io.smallrye.config.inject;
 
-import static io.smallrye.config.inject.SecuritySupport.getContextClassLoader;
-
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Supplier;
@@ -27,7 +25,6 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.smallrye.config.ConfigValue;
@@ -39,9 +36,10 @@ import io.smallrye.config.ConfigValue;
  */
 @ApplicationScoped
 public class ConfigProducer {
+
     @Produces
     protected Config getConfig(InjectionPoint injectionPoint) {
-        return ConfigProvider.getConfig(getContextClassLoader());
+        return new InjectedConfig();
     }
 
     @Dependent

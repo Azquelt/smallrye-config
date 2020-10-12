@@ -41,7 +41,7 @@ public final class ConfigProducerUtil {
         if (name == null) {
             return null;
         }
-        final SmallRyeConfig src = (SmallRyeConfig) config;
+        final SmallRyeConfig src = config.unwrap(SmallRyeConfig.class);
         Converter<T> converter = resolveConverter(injectionPoint, src);
         String rawValue = getRawValue(name, src);
         if (rawValue == null) {
@@ -70,7 +70,7 @@ public final class ConfigProducerUtil {
             return null;
         }
 
-        ConfigValue configValue = ((SmallRyeConfig) config).getConfigValue(name);
+        ConfigValue configValue = config.unwrap(SmallRyeConfig.class).getConfigValue(name);
         if (configValue.getValue() == null) {
             configValue = configValue.withValue(getDefaultValue(injectionPoint));
         }
