@@ -1,5 +1,7 @@
 package io.smallrye.config;
 
+import static io.smallrye.config.ConfigMappingLoader.getConfigMappingClass;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
@@ -59,7 +61,7 @@ public final class ConfigMappings implements Serializable {
             return getConfigMapping(type);
         }
 
-        final Map<String, ConfigMappingObject> mappingsForType = mappings.get(ConfigMappingClass.toInterface(type));
+        final Map<String, ConfigMappingObject> mappingsForType = mappings.get(getConfigMappingClass(type));
         if (mappingsForType == null) {
             throw ConfigMessages.msg.mappingNotFound(type.getName());
         }

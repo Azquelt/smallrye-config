@@ -20,7 +20,6 @@ import static org.objectweb.asm.Type.getInternalName;
 import static org.objectweb.asm.Type.getMethodDescriptor;
 import static org.objectweb.asm.Type.getType;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -31,13 +30,13 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import io.smallrye.common.classloader.ClassDefiner;
+import io.smallrye.common.constraint.Assert;
 
-final class ConfigMappingClass {
-    private static final ClassValue<Class<?>> cv = new ClassValue<Class<?>>() {
+final class ConfigMappingClass implements ConfigMappingMetadata {
+    private static final ClassValue<ConfigMappingClass> cv = new ClassValue<ConfigMappingClass>() {
         @Override
-        protected Class<?> computeValue(final Class<?> type) {
-            return createConfigurationClass(type);
+        protected ConfigMappingClass computeValue(final Class<?> classType) {
+            return createConfigurationClass(classType);
         }
     };
 
@@ -45,24 +44,28 @@ final class ConfigMappingClass {
     private static final String I_CLASS = getInternalName(Class.class);
     private static final String I_FIELD = getInternalName(Field.class);
 
-    static Class<?> toInterface(final Class<?> classType) {
+    static ConfigMappingClass getConfigurationClass(Class<?> classType) {
+        Assert.checkNotNullParam("classType", classType);
         return cv.get(classType);
     }
 
-    private static Class<?> createConfigurationClass(final Class<?> classType) {
+    private static ConfigMappingClass createConfigurationClass(final Class<?> classType) {
         if (classType.isInterface() && classType.getTypeParameters().length == 0 ||
                 Modifier.isAbstract(classType.getModifiers()) ||
                 classType.isEnum()) {
-            return classType;
+            return null;
         }
 
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        String interfaceName = classType.getName() + classType.getName().hashCode() + "I";
 
+        return new ConfigMappingClass(classType, interfaceName);
+    }
+
+    private static byte[] getClassBytes(final Class<?> classType, final String interfaceName) {
         String classInternalName = getInternalName(classType);
-        String interfaceName = ConfigMappingClass.class.getPackage().getName() + "." + classType.getSimpleName() +
-                classType.getName().hashCode() + "I";
         String interfaceInternalName = interfaceName.replace('.', '/');
 
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         writer.visit(V1_8, ACC_PUBLIC | ACC_INTERFACE | ACC_ABSTRACT, interfaceInternalName, null, I_OBJECT,
                 new String[] { getInternalName(ConfigMappingClassMapper.class) });
 
@@ -212,8 +215,7 @@ final class ConfigMappingClass {
         ctor.visitMaxs(2, 2);
         writer.visitEnd();
 
-        return ClassDefiner.defineClass(MethodHandles.lookup(), ConfigMappingClass.class, interfaceName,
-                writer.toByteArray());
+        return writer.toByteArray();
     }
 
     private static String getSignature(final Field field) {
@@ -246,5 +248,28 @@ final class ConfigMappingClass {
         }
 
         return true;
+    }
+
+    private final Class<?> classType;
+    private final String interfaceName;
+
+    public ConfigMappingClass(final Class<?> classType, final String interfaceName) {
+        this.classType = classType;
+        this.interfaceName = interfaceName;
+    }
+
+    @Override
+    public Class<?> getInterfaceType() {
+        return classType;
+    }
+
+    @Override
+    public String getClassName() {
+        return interfaceName;
+    }
+
+    @Override
+    public byte[] getClassBytes() {
+        return ConfigMappingClass.getClassBytes(classType, interfaceName);
     }
 }

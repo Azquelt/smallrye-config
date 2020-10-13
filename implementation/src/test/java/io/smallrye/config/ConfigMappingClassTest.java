@@ -14,8 +14,7 @@ import org.junit.jupiter.api.Test;
 class ConfigMappingClassTest {
     @Test
     void toClass() {
-        final Class<?> klass = ConfigMappingClass.toInterface(ServerClass.class);
-        final SmallRyeConfig config = new SmallRyeConfigBuilder().withMapping(klass)
+        final SmallRyeConfig config = new SmallRyeConfigBuilder().withMapping(ServerClass.class)
                 .withDefaultValue("host", "localhost")
                 .withDefaultValue("port", "8080")
                 .build();
@@ -27,8 +26,7 @@ class ConfigMappingClassTest {
 
     @Test
     void privateFields() {
-        final Class<?> klass = ConfigMappingClass.toInterface(ServerPrivate.class);
-        final SmallRyeConfig config = new SmallRyeConfigBuilder().withMapping(klass)
+        final SmallRyeConfig config = new SmallRyeConfigBuilder().withMapping(ServerPrivate.class)
                 .withDefaultValue("host", "localhost")
                 .withDefaultValue("port", "8080")
                 .build();
@@ -40,8 +38,7 @@ class ConfigMappingClassTest {
 
     @Test
     void optionals() {
-        final Class<?> klass = ConfigMappingClass.toInterface(ServerOptional.class);
-        final SmallRyeConfig config = new SmallRyeConfigBuilder().withMapping(klass)
+        final SmallRyeConfig config = new SmallRyeConfigBuilder().withMapping(ServerOptional.class)
                 .withDefaultValue("host", "localhost")
                 .withDefaultValue("port", "8080")
                 .build();

@@ -1,6 +1,5 @@
 package io.smallrye.config;
 
-import org.eclipse.microprofile.config.tck.ConfigPropertiesTest;
 import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
 import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.shrinkwrap.api.Archive;
@@ -16,10 +15,6 @@ public class SmallRyeConfigArchiveProcessor implements ApplicationArchiveProcess
     }
 
     private static Class<?> useFactoryForTest(TestClass testClass) {
-        if (testClass.getJavaClass().equals(ConfigPropertiesTest.class)) {
-            return ConfigPropertiesTestFactory.class;
-        }
-
         return SmallRyeConfigTestFactory.class;
     }
 }

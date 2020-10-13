@@ -278,7 +278,7 @@ public class SmallRyeConfig implements Config, Serializable {
         return Optional.ofNullable(getConverterOrNull(asType));
     }
 
-    <T> Converter<T> requireConverter(final Class<T> asType) {
+    public <T> Converter<T> requireConverter(final Class<T> asType) {
         final Converter<T> conv = getConverterOrNull(asType);
         if (conv == null) {
             throw ConfigMessages.msg.noRegisteredConverter(asType);
